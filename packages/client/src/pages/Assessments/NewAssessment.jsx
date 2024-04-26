@@ -2,127 +2,155 @@ import React from 'react';
 import { Button, Form } from 'react-bootstrap';
 import { useForm } from 'react-hook-form';
 import { AssessmentService } from '../../services/AssessmentService';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 export const NewAssessment = () => {
-  // create a form that utilizes the "onSubmit" function to send data to
-  // packages/client/src/services/AssessmentService.js and then onto the packages/api/src/routes/assessment express API
-  const onSubmit = async (data) =>
-    await AssessmentService.submit(data);
+  const { formState: { errors }, handleSubmit, register } = useForm();
 
-  const {
-    formState: { errors },
-    handleSubmit,
-    register,
-  } = useForm();
+  const onSubmit = async (data) => {
+    const score = parseInt(data.catJudicialSystemContact) +
+                  parseInt(data.altercationsWithCats) +
+                  parseInt(data.altercationsWithOwner) +
+                  parseInt(data.playsWellWithDogs) +
+                  parseInt(data.hissesAtStrangers);
+
+    let riskLevel;
+    if (score >= 3) {
+      riskLevel = `High`;
+    } else if (score === 2) {
+      riskLevel = `Medium`;
+    } else {
+      riskLevel = `Low`;
+    }
+
+    const assessmentData = {
+      catDateOfBirth: data.catDateOfBirth,
+      catName: data.catName,
+      instrumentType: 1,
+      riskLevel,
+      score,
+    };
+
+    try {
+      await AssessmentService.submit(assessmentData);
+      alert(`Assessment submitted successfully!`);
+    } catch (error) {
+      console.error(`Error submitting assessment:`, error);
+      alert(`Failed to submit assessment.`);
+    }
+  };
 
   return (
     <Form onSubmit={handleSubmit(onSubmit)}>
-      <label htmlFor="CatName">Cat Name:</label>
-      <input {...register(`firstName`)} />
-      <label htmlFor="Catdob"> Cat Date of Birth:</label>
-      <input id="dob" type="date" {...register(`dob`)} />
-      <div
-        style={{
-          backgroundColor: `#e9ecef`,
-          border: `1px solid #ced4da`,
-          borderRadius: `0.25rem`,
-          color: `#495057`,
-          padding: `0.375rem 0.75rem`,
-        }}
-      >
-        Cat Behavioral Instrument
-      </div>
-      <fieldset>
-        <legend>Has your cat had previous contact with the Cat Judicial System?</legend>
-        <label>
-          <input
-            type="radio"
-            value="yes"
-            {...register(`catJudicialContact`, { required: `This field is required` })}
-          /> Yes
-        </label>
-        <label>
-          <input
-            type="radio"
-            value="no"
-            {...register(`catJudicialContact`, { required: `This field is required` })}
-          /> No
-        </label>
-        {errors.catJudicialContact && <p>{errors.catJudicialContact.message}</p>}
-      </fieldset>
-      <fieldset>
-        <legend>Physical altercations with other cats</legend>
-        <label>
-          <input
-            type="radio"
-            value="0-3"
-            {...register(`catFights`, { required: `This field is required` })}
-          /> 0-3
-        </label>
-        <label>
-          <input
-            type="radio"
-            value="3+"
-            {...register(`catFights`, { required: `This field is required` })}
-          /> 3+
-        </label>
-        {errors.catJudicialContact && <p>{errors.catJudicialContact.message}</p>}
-      </fieldset>
-      <fieldset>
-        <legend>Physical altercations with owner (scratching, biting, etc...)</legend>
-        <label>
-          <input
-            type="radio"
-            value="0-10 altercations"
-            {...register(`catFights`, { required: `This field is required` })}
-          /> 0-10 altercations
-        </label>
-        <label>
-          <input
-            type="radio"
-            value="10+ altercations"
-            {...register(`catFights`, { required: `This field is required` })}
-          /> 10+ altercations
-        </label>
-        {errors.catJudicialContact && <p>{errors.catJudicialContact.message}</p>}
-      </fieldset>
-      <fieldset>
-        <legend>Plays well with dogs</legend>
-        <label>
-          <input
-            type="radio"
-            value="yes"
-            {...register(`catJudicialContact`, { required: `This field is required` })}
-          /> Yes
-        </label>
-        <label>
-          <input
-            type="radio"
-            value="no"
-            {...register(`catJudicialContact`, { required: `This field is required` })}
-          /> No
-        </label>
-        {errors.catJudicialContact && <p>{errors.catJudicialContact.message}</p>}
-      </fieldset>
-      <fieldset>
-        <legend>Hisses at strangers</legend>
-        <label>
-          <input
-            type="radio"
-            value="yes"
-            {...register(`catJudicialContact`, { required: `This field is required` })}
-          /> Yes
-        </label>
-        <label>
-          <input
-            type="radio"
-            value="no"
-            {...register(`catJudicialContact`, { required: `This field is required` })}
-          /> No
-        </label>
-        {errors.catJudicialContact && <p>{errors.catJudicialContact.message}</p>}
-      </fieldset>
+      <h2>Cat Behavioral Instrument</h2>
+      <Form.Group className="mb-3">
+        <Form.Label>Cat Name</Form.Label>
+        <Form.Control
+          type="text"
+          placeholder="Enter cat's name"
+          {...register(`catName`, { required: `Cat Name is required` })}
+        />
+        {errors.CatName && <p>{errors.CatName.message}</p>}
+      </Form.Group>
+
+      <Form.Group className="mb-3">
+        <Form.Label>Cat Date of Birth</Form.Label>
+        <Form.Control type="date" {...register(`catDateOfBirth`, { required: `Date of Birth is required` })} />
+        {errors.CatDateOfBirth && <p>{errors.catDateOfBirth.message}</p>}
+      </Form.Group>
+
+      {/* Questions with Radio Buttons */}
+      <Form.Group className="mb-3">
+        <Form.Label>Previous contact with the Cat Judicial System</Form.Label>
+        <Form.Check
+          type="radio"
+          label="No (score = 0)"
+          value="0"
+          {...register(`catJudicialSystemContact`, { required: true })}
+          id="noJudicial"
+        />
+        <Form.Check
+          type="radio"
+          label="Yes (score = 1)"
+          value="1"
+          {...register(`catJudicialSystemContact`, { required: true })}
+          id="yesJudicial"
+        />
+      </Form.Group>
+
+      <Form.Group className="mb-3">
+        <Form.Label>Physical altercations with other cats</Form.Label>
+        <Form.Check
+          type="radio"
+          label="0-3 altercations (score = 0)"
+          value="0"
+          {...register(`altercationsWithCats`, { required: true })}
+          id="0to3Altercations"
+        />
+        <Form.Check
+          type="radio"
+          label="3+ altercations (score = 1)"
+          value="1"
+          {...register(`altercationsWithCats`, { required: true })}
+          id="3plusAltercations"
+        />
+      </Form.Group>
+
+      <Form.Group className="mb-3">
+        <Form.Label>Physical altercations with owner (scratching, biting, etc...)</Form.Label>
+        <Form.Check
+          type="radio"
+          label="10+ altercations (score = 1)"
+          value="1"
+          {...register(`altercationsWithOwner`, { required: true })}
+          id="moreThan10Altercations"
+        />
+        <Form.Check
+          type="radio"
+          label="0-10 altercations (score = 0)"
+          value="0"
+          {...register(`altercationsWithOwner`, { required: true })}
+          id="lessThan10Altercations"
+        />
+      </Form.Group>
+
+      <Form.Group className="mb-3">
+        <Form.Label>Plays well with dogs</Form.Label>
+        <Form.Check
+          type="radio"
+          label="No (score = 1)"
+          value="1"
+          {...register(`playsWellWithDogs`, { required: true })}
+          id="doesNotPlayWellWithDogs"
+        />
+        <Form.Check
+          type="radio"
+          label="Yes (score = 0)"
+          value="0"
+          {...register(`playsWellWithDogs`, { required: true })}
+          id="playsWellWithDogs"
+        />
+      </Form.Group>
+
+      <Form.Group className="mb-3">
+        <Form.Label>Hisses at strangers</Form.Label>
+        <Form.Check
+          type="radio"
+          label="Yes (score = 1)"
+          value="1"
+          {...register(`hissesAtStrangers`, { required: true })}
+          id="hissesYes"
+        />
+        <Form.Check
+          type="radio"
+          label="No (score = 0)"
+          value="0"
+          {...register(`hissesAtStrangers`, { required: true })}
+          id="hissesNo"
+        />
+      </Form.Group>
       <Button variant="primary" type="submit">Submit</Button>
     </Form>
   );
+
 };

@@ -6,7 +6,7 @@ const { Router } = require(`express`);
 const assessmentRouter = Router();
 
 assessmentRouter.post(
-  `/`,
+  `/submit/`,
   async (req, res, next) => {
     try {
       const { assessment } = req.body;
