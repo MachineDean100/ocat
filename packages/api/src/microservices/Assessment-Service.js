@@ -1,30 +1,30 @@
 const { Assessment } = require(`../database/models`);
 
-exports.submit = async (assessment) => {
+exports.submit = async (assessmentData) => {
   try {
-    // Use the sequelize model `Assessment` to save the assessment data in the database
-    const result = await Assessment.create(assessment);
-    return result; // Return the newly created database entry
+    const newAssessment = await Assessment.create(assessmentData);
+    return newAssessment;
   } catch (error) {
-    console.error(`Error saving assessment:`, error);
-    throw error; // Re-throw the error to be handled by the caller
+    throw new Error(`Error creating new assessment: ${error.message}`);
   }
-  // use the sequelize model Assessments from packages/api/src/database/models to save
-  // the assessment data in the PostgreSQL database
 };
-
-exports.getList = async () => {
-  // use the sequelize model Assessments from packages/api/src/database/models to fetch
-  // the assessment data from the PostgreSQL database
+// Define a function to fetch all assessment data
+exports.getAllAssessments = async () => {
   try {
-    // Use the sequelize model `Assessment` to fetch all assessment data from the database
     const assessments = await Assessment.findAll();
-    return assessments; // Return the list of assessments
+    return assessments;
   } catch (error) {
-    console.error(`Error fetching assessments:`, error);
-    throw error; // Re-throw the error to be handled by the caller
+    throw new Error(`Error fetching assessments: ${error.message}`);
   }
-  // const assessments = [];
+};
+exports.getList = async () => {
+  try {
+    // Fetch all assessments from the database
+    const assessments = await Assessment.findAll();
+    return assessments; // This returns an array of assessments
+  } catch (error) {
+    // Handle any errors that occur during the fetching of assessments
+    throw new Error(`Error fetching assessments: ${error.message}`);
+  }
 
-  // return assessments;
 };

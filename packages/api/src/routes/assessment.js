@@ -6,7 +6,7 @@ const { Router } = require(`express`);
 const assessmentRouter = Router();
 
 assessmentRouter.post(
-  `/`,
+  `/submit/`,
   async (req, res, next) => {
     try {
       const { assessment } = req.body;
@@ -30,7 +30,7 @@ assessmentRouter.post(
 );
 
 assessmentRouter.get(
-  `/`,
+  `/list/`,
   async (req, res, next) => {
     try {
       // verify that your data is making it here to the API by using console.log();

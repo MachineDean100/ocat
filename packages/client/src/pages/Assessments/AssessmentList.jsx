@@ -1,23 +1,49 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { AssessmentService } from '../../services/AssessmentService';
 
 export const AssessmentList = () => {
   const [ assessments, setAssessments ] = useState([]);
 
-  // fetch all assessments using the AssessmentService.getList function from OCAT/client/services/AssessmentService.js
   useEffect(() => {
-    const fetchAssessments = async () => {
-      setAssessments(await AssessmentService.getList());
-    };
+    async function fetchAssessments() {
+      try {
+        const fetchedAssessments = await AssessmentService.getList();
+        console.log(`assessments:`, fetchedAssessments);
+
+        if (!fetchedAssessments) {
+          throw new Error(`No assessments found`);
+        }
+
+        setAssessments(fetchedAssessments);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
     fetchAssessments();
   }, []);
 
   return (
-    <div>
-      {/*
-          List goes here
-          Please use the library react-table https://www.npmjs.com/package/react-table
-      */}
-    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Cat Date of Birth</th>
+          <th>Cat Name</th>
+          <th>Instrument Type</th>
+          <th>Risk Level</th>
+          <th>Score</th>
+        </tr>
+      </thead>
+      <tbody>
+        {assessments.map((assessment) =>
+          <tr key={assessment.id}>
+            <td>{assessment.catDateOfBirth}</td>
+            <td>{assessment.catName}</td>
+            <td>{assessment.instrumentType}</td>
+            <td>{assessment.riskLevel}</td>
+            <td>{assessment.score}</td>
+          </tr>)}
+      </tbody>
+    </table>
   );
 };
