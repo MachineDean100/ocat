@@ -5,23 +5,32 @@ export const AssessmentList = () => {
   const [ assessments, setAssessments ] = useState([]);
 
   useEffect(() => {
-    async function fetchAssessments() {
-      try {
-        const fetchedAssessments = await AssessmentService.getList();
-        console.log(`assessments:`, fetchedAssessments);
-
-        if (!fetchedAssessments) {
-          throw new Error(`No assessments found`);
-        }
-
-        setAssessments(fetchedAssessments);
-      } catch (error) {
-        console.error(error);
-      }
-    }
-
     fetchAssessments();
   }, []);
+
+  async function fetchAssessments() {
+    try {
+      const fetchedAssessments = await AssessmentService.getList();
+      console.log(`assessments:`, fetchedAssessments);
+
+      if (!fetchedAssessments) {
+        throw new Error(`No assessments found`);
+      }
+
+      setAssessments(fetchedAssessments);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  async function deleteAssessment(id) {
+    try {
+      await AssessmentService.delete(id); // Assuming AssessmentService has a delete method
+      fetchAssessments(); // Refetch the assessments after deleting
+    } catch (error) {
+      console.error(error);
+    }
+  }
 
   return (
     <table>
@@ -32,6 +41,7 @@ export const AssessmentList = () => {
           <th>Instrument Type</th>
           <th>Risk Level</th>
           <th>Score</th>
+          <th>Actions</th>
         </tr>
       </thead>
       <tbody>
@@ -42,6 +52,9 @@ export const AssessmentList = () => {
             <td>{assessment.instrumentType}</td>
             <td>{assessment.riskLevel}</td>
             <td>{assessment.score}</td>
+            <td>
+              <button onClick={() => deleteAssessment(assessment.id)}>Delete</button>
+            </td>
           </tr>)}
       </tbody>
     </table>

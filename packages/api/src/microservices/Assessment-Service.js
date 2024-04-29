@@ -28,3 +28,23 @@ exports.getList = async () => {
   }
 
 };
+exports.delete = async (id) => {
+  try {
+    // Find the assessment with the given id
+    const assessment = await Assessment.findOne({ where: { id } });
+
+    // If no assessment is found, throw an error
+    if (!assessment) {
+      throw new Error(`No assessment found with id: ${id}`);
+    }
+
+    // Delete the assessment
+    await assessment.destroy();
+
+    // Return a success message
+    return { message: `Assessment deleted successfully` };
+  } catch (error) {
+    // Handle any errors that occur during the deletion of the assessment
+    throw new Error(`Error deleting assessment: ${error.message}`);
+  }
+};

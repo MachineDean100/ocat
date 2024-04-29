@@ -4,7 +4,7 @@ import { AssessmentService } from '../../services/AssessmentService';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 export const NewAssessment = () => {
-  const { formState: { errors }, handleSubmit, register } = useForm();
+  const { formState: { errors }, handleSubmit, register, reset } = useForm();
 
   const onSubmit = async (data) => {
     const score = parseInt(data.catJudicialSystemContact) +
@@ -12,7 +12,6 @@ export const NewAssessment = () => {
                   parseInt(data.altercationsWithOwner) +
                   parseInt(data.playsWellWithDogs) +
                   parseInt(data.hissesAtStrangers);
-
     let riskLevel;
     if (score >= 3) {
       riskLevel = `High`;
@@ -21,7 +20,6 @@ export const NewAssessment = () => {
     } else {
       riskLevel = `Low`;
     }
-
     const assessmentData = {
       catDateOfBirth: data.catDateOfBirth,
       catName: data.catName,
@@ -33,6 +31,7 @@ export const NewAssessment = () => {
     try {
       await AssessmentService.submit(assessmentData);
       alert(`Assessment submitted successfully!`);
+      reset();
     } catch (error) {
       console.error(`Error submitting assessment:`, error);
       alert(`Failed to submit assessment.`);

@@ -30,7 +30,7 @@ CREATE TABLE public.assessments (
     score integer NOT NULL,
     risk_level text NOT NULL,
     cat_name text NOT NULL,
-    cat_date_of_birth NOT NULL,
+    cat_date_of_birth date NOT NULL,
     created_at timestamp with time zone NOT NULL,
     updated_at timestamp with time zone NOT NULL,
     deleted_at timestamp with time zone
