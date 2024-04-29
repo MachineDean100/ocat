@@ -38,4 +38,20 @@ export class AssessmentService {
       }
     }
   }
+
+  static async delete(id) {
+    try {
+      console.log(`Deleting assessment with id:`, id);
+      const response = await Axios.delete(`/assessment/${id}`);
+      console.log(`Received response:`, response.data);
+      return response.data;
+    } catch (err) {
+      console.error(`An error occurred:`, err);
+      if (err.response && err.response.data) {
+        throw new Error(`${err.response.statusText} - ${err.response.data.message}`);
+      } else {
+        throw new Error(`An unexpected error occurred`);
+      }
+    }
+  }
 }
