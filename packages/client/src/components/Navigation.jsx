@@ -1,6 +1,5 @@
 import React from 'react';
 import { Container, Nav, Navbar } from 'react-bootstrap';
-
 export const Navigation = () =>
   <header>
     <Navbar expand="md" bg="dark" variant="dark" fixed="top">
@@ -11,6 +10,8 @@ export const Navigation = () =>
           <Nav className="me-auto">
             <Nav.Link href="/">Dashboard</Nav.Link>
             <Nav.Link href="/assessment/new">New Assessment</Nav.Link>
+            <Nav.Link href="/assessment/list">Assessment List</Nav.Link>
+            <Nav.Link href="/assessment/static-list">Static Assessment List</Nav.Link>
           </Nav>
         </Navbar.Collapse>
       </Container>
